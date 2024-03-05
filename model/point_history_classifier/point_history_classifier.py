@@ -11,11 +11,6 @@ print("Initiate Hand Gesture Classification, file at:" + os.path.dirname(full_pa
 class PointHistoryClassifier(object):
     def __init__(
         self,
-        # model_path='model/point_history_classifier/point_history_classifier.tflite',
-        
-        # DABIN's fix
-        ### Get filepath
-        ### Get the location of the model
         model_path=os.path.join(dir_path,"point_history_classifier.tflite"),
         score_th=0.5,
         invalid_value=0,

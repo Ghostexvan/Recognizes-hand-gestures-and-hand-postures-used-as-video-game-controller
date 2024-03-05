@@ -229,7 +229,7 @@ def main():
                     landmark_list
                 )
                 
-                ###### Historical hand landmark data
+                ###### Hand landmark history data
                 pre_processed_point_history_list = pre_process_point_history(
                     debug_image, point_history)
                 ###### >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -336,11 +336,9 @@ def calc_bounding_rect(image, landmarks):
     ## This function returns the coordinates of the four vertices of the rectangle surrounding  
     ## the detected hand
     ## --------------------------------------------------------------------------------------------------------
-    
-    ## Get the length and width of the image
+
     image_width, image_height = image.shape[1], image.shape[0]
 
-    
     landmark_array = np.empty((0, 2), int)
 
     for _, landmark in enumerate(landmarks.landmark):
@@ -355,27 +353,32 @@ def calc_bounding_rect(image, landmarks):
 
     return [x, y, x + w, y + h]
 
-
+# CALCULATE THE LIST OF HAND LANDMARKS ------------------------------------------------------------------------
 def calc_landmark_list(image, landmarks):
+    ## This function returns a list of landmarks on the hand
+    ## --------------------------------------------------------------------------------------------------------
+    
     image_width, image_height = image.shape[1], image.shape[0]
 
     landmark_point = []
 
-    # Keypoints
+    ## Keypoints
     for _, landmark in enumerate(landmarks.landmark):
         landmark_x = min(int(landmark.x * image_width), image_width - 1)
         landmark_y = min(int(landmark.y * image_height), image_height - 1)
-        # landmark_z = landmark.z
 
         landmark_point.append([landmark_x, landmark_y])
 
     return landmark_point
 
-
+# PREPROCESSING THE HAND LANDMARK DATA
 def pre_process_landmark(landmark_list):
+    ## This function returns the hand landmark data after preprocessing
+    ## --------------------------------------------------------------------------------------------------------
+    
     temp_landmark_list = copy.deepcopy(landmark_list)
 
-    # Convert to relative coordinates
+    ## Convert to relative coordinates
     base_x, base_y = 0, 0
     for index, landmark_point in enumerate(temp_landmark_list):
         if index == 0:
@@ -384,11 +387,11 @@ def pre_process_landmark(landmark_list):
         temp_landmark_list[index][0] = temp_landmark_list[index][0] - base_x
         temp_landmark_list[index][1] = temp_landmark_list[index][1] - base_y
 
-    # Convert to 1D list
+    ## Convert to 1D list
     temp_landmark_list = list(
         itertools.chain.from_iterable(temp_landmark_list))
 
-    # Normalization
+    ## Normalization
     max_value = max(list(map(abs, temp_landmark_list)))
 
     def normalize_(n):
@@ -398,13 +401,16 @@ def pre_process_landmark(landmark_list):
 
     return temp_landmark_list
 
-
+# PREPROCESS DATA RECORDED ACCORDING TO HAND LANDMARK HISTORY -------------------------------------------------
 def pre_process_point_history(image, point_history):
+    ## This function returns hand landmark historical data after preprocessing
+    ## --------------------------------------------------------------------------------------------------------
+    
     image_width, image_height = image.shape[1], image.shape[0]
 
     temp_point_history = copy.deepcopy(point_history)
 
-    # Convert to relative coordinates
+    ## Convert to relative coordinates
     base_x, base_y = 0, 0
     for index, point in enumerate(temp_point_history):
         if index == 0:
@@ -415,14 +421,17 @@ def pre_process_point_history(image, point_history):
         temp_point_history[index][1] = (temp_point_history[index][1] -
                                         base_y) / image_height
 
-    # Convert to 1D list
+    ## Convert to 1D list
     temp_point_history = list(
         itertools.chain.from_iterable(temp_point_history))
 
     return temp_point_history
 
-
+# WRITE DATA TO CSV FILE --------------------------------------------------------------------------------------
 def logging_csv(number, mode, landmark_list, point_history_list):
+    ## This function writes the collected data to the path corresponding to the program mode
+    ## --------------------------------------------------------------------------------------------------------
+    
     if mode == 0:
         pass
     if mode == 1 and (0 <= number <= 9):
@@ -437,11 +446,14 @@ def logging_csv(number, mode, landmark_list, point_history_list):
             writer.writerow([number, *point_history_list])
     return
 
-
+# DRAW HAND LANDMARKS ON THE SCREEN ---------------------------------------------------------------------------
 def draw_landmarks(image, landmark_point):
-    # Connection line
+    ## This function draws landmarks on the hand onto the display screen
+    ## --------------------------------------------------------------------------------------------------------
+    
+    ## Connection line
     if len(landmark_point) > 0:
-        # Thumb
+        ### Thumb
         cv.line(image, tuple(landmark_point[2]), tuple(landmark_point[3]),
                 (0, 0, 0), 6)
         cv.line(image, tuple(landmark_point[2]), tuple(landmark_point[3]),
@@ -451,7 +463,7 @@ def draw_landmarks(image, landmark_point):
         cv.line(image, tuple(landmark_point[3]), tuple(landmark_point[4]),
                 (255, 255, 255), 2)
 
-        # Index finger
+        ### Index finger
         cv.line(image, tuple(landmark_point[5]), tuple(landmark_point[6]),
                 (0, 0, 0), 6)
         cv.line(image, tuple(landmark_point[5]), tuple(landmark_point[6]),
@@ -465,7 +477,7 @@ def draw_landmarks(image, landmark_point):
         cv.line(image, tuple(landmark_point[7]), tuple(landmark_point[8]),
                 (255, 255, 255), 2)
 
-        # Middle finger
+        ### Middle finger
         cv.line(image, tuple(landmark_point[9]), tuple(landmark_point[10]),
                 (0, 0, 0), 6)
         cv.line(image, tuple(landmark_point[9]), tuple(landmark_point[10]),
@@ -479,7 +491,7 @@ def draw_landmarks(image, landmark_point):
         cv.line(image, tuple(landmark_point[11]), tuple(landmark_point[12]),
                 (255, 255, 255), 2)
 
-        # Ring finger
+        ### Ring finger
         cv.line(image, tuple(landmark_point[13]), tuple(landmark_point[14]),
                 (0, 0, 0), 6)
         cv.line(image, tuple(landmark_point[13]), tuple(landmark_point[14]),
@@ -493,7 +505,7 @@ def draw_landmarks(image, landmark_point):
         cv.line(image, tuple(landmark_point[15]), tuple(landmark_point[16]),
                 (255, 255, 255), 2)
 
-        # Little finger
+        ### Little finger
         cv.line(image, tuple(landmark_point[17]), tuple(landmark_point[18]),
                 (0, 0, 0), 6)
         cv.line(image, tuple(landmark_point[17]), tuple(landmark_point[18]),
@@ -507,7 +519,7 @@ def draw_landmarks(image, landmark_point):
         cv.line(image, tuple(landmark_point[19]), tuple(landmark_point[20]),
                 (255, 255, 255), 2)
 
-        # Palm of the hand
+        ### Palm of the hand
         cv.line(image, tuple(landmark_point[0]), tuple(landmark_point[1]),
                 (0, 0, 0), 6)
         cv.line(image, tuple(landmark_point[0]), tuple(landmark_point[1]),
@@ -537,107 +549,118 @@ def draw_landmarks(image, landmark_point):
         cv.line(image, tuple(landmark_point[17]), tuple(landmark_point[0]),
                 (255, 255, 255), 2)
 
-    # Keypoints
+    ## Keypoints
     for index, landmark in enumerate(landmark_point):
-        if index == 0:  # Wrist 1
+        if index == 0:  ### Wrist 1
             cv.circle(image, (landmark[0], landmark[1]), 5, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 5, (0, 0, 0), 1)
-        if index == 1:  # Writst 2
+        if index == 1:  ### Writst 2
             cv.circle(image, (landmark[0], landmark[1]), 5, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 5, (0, 0, 0), 1)
-        if index == 2:  # 親指：付け根
+            
+        if index == 2:  ### Thumb: Base
             cv.circle(image, (landmark[0], landmark[1]), 5, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 5, (0, 0, 0), 1)
-        if index == 3:  # 親指：第1関節
+        if index == 3:  ### Thumb: 1st joint
             cv.circle(image, (landmark[0], landmark[1]), 5, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 5, (0, 0, 0), 1)
-        if index == 4:  # 親指：指先
+        if index == 4:  ### Thumb: fingertip
             cv.circle(image, (landmark[0], landmark[1]), 8, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 8, (0, 0, 0), 1)
-        if index == 5:  # 人差指：付け根
+            
+        if index == 5:  ### Index finger: base
             cv.circle(image, (landmark[0], landmark[1]), 5, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 5, (0, 0, 0), 1)
-        if index == 6:  # 人差指：第2関節
+        if index == 6:  ### Index finger: 2nd joint
             cv.circle(image, (landmark[0], landmark[1]), 5, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 5, (0, 0, 0), 1)
-        if index == 7:  # 人差指：第1関節
+        if index == 7:  ### Index finger: 1st joint
             cv.circle(image, (landmark[0], landmark[1]), 5, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 5, (0, 0, 0), 1)
-        if index == 8:  # 人差指：指先
+        if index == 8:  ### Index finger: fingertip
             cv.circle(image, (landmark[0], landmark[1]), 8, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 8, (0, 0, 0), 1)
-        if index == 9:  # 中指：付け根
+            
+        if index == 9:  ### Middle finger: base
             cv.circle(image, (landmark[0], landmark[1]), 5, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 5, (0, 0, 0), 1)
-        if index == 10:  # 中指：第2関節
+        if index == 10:  ### Middle finger: 2nd joint
             cv.circle(image, (landmark[0], landmark[1]), 5, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 5, (0, 0, 0), 1)
-        if index == 11:  # 中指：第1関節
+        if index == 11:  ### Middle finger: 1st joint
             cv.circle(image, (landmark[0], landmark[1]), 5, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 5, (0, 0, 0), 1)
-        if index == 12:  # 中指：指先
+        if index == 12:  ### Middle finger: fingertip
             cv.circle(image, (landmark[0], landmark[1]), 8, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 8, (0, 0, 0), 1)
-        if index == 13:  # 薬指：付け根
+            
+        if index == 13:  ### Ring finger: base
             cv.circle(image, (landmark[0], landmark[1]), 5, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 5, (0, 0, 0), 1)
-        if index == 14:  # 薬指：第2関節
+        if index == 14:  ### Ring finger: 2nd joint
             cv.circle(image, (landmark[0], landmark[1]), 5, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 5, (0, 0, 0), 1)
-        if index == 15:  # 薬指：第1関節
+        if index == 15:  ### Ring finger: 1st joint
             cv.circle(image, (landmark[0], landmark[1]), 5, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 5, (0, 0, 0), 1)
-        if index == 16:  # 薬指：指先
+        if index == 16:  ### Ring finger: fingertip
             cv.circle(image, (landmark[0], landmark[1]), 8, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 8, (0, 0, 0), 1)
-        if index == 17:  # 小指：付け根
+            
+        if index == 17:  ### Little finger: base
             cv.circle(image, (landmark[0], landmark[1]), 5, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 5, (0, 0, 0), 1)
-        if index == 18:  # 小指：第2関節
+        if index == 18:  ### Little finger: 2nd joint
             cv.circle(image, (landmark[0], landmark[1]), 5, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 5, (0, 0, 0), 1)
-        if index == 19:  # 小指：第1関節
+        if index == 19:  ### Little finger: 1st joint
             cv.circle(image, (landmark[0], landmark[1]), 5, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 5, (0, 0, 0), 1)
-        if index == 20:  # 小指：指先
+        if index == 20:  ### Little finger: fingertip
             cv.circle(image, (landmark[0], landmark[1]), 8, (255, 255, 255),
                       -1)
             cv.circle(image, (landmark[0], landmark[1]), 8, (0, 0, 0), 1)
 
     return image
 
-
+# DRAW A BORDER AROUND THE DETECTED HAND ----------------------------------------------------------------------
 def draw_bounding_rect(use_brect, image, brect):
+    ## This function draws a border around the detected hand
+    ## --------------------------------------------------------------------------------------------------------
+    
     if use_brect:
-        # 外接矩形
+        ### Circumscribed rectangle
         cv.rectangle(image, (brect[0], brect[1]), (brect[2], brect[3]),
                      (0, 0, 0), 1)
 
     return image
 
-
+# DRAW TEXT INFORMATION ON THE DISPLAY SCREEN -----------------------------------------------------------------
 def draw_info_text(image, brect, handedness, hand_sign_text,
                    finger_gesture_text, landmark, index_coordinate):
+    ## This function draws text information on the display screen
+    ## --------------------------------------------------------------------------------------------------------
+    
     cv.rectangle(image, (brect[0], brect[1]), (brect[2], brect[1] - 22),
                  (0, 0, 0), -1)
 
@@ -665,8 +688,11 @@ def draw_info_text(image, brect, handedness, hand_sign_text,
                    cv.LINE_AA)
     return image
 
-
+# DRAW THE HISTORY OF HAND LANDMARKS ON THE DISPLAY SCREEN ----------------------------------------------------
 def draw_point_history(image, point_history):
+    ## This function draws the history of hand landmarks on the display screen
+    ## --------------------------------------------------------------------------------------------------------
+    
     for index, point in enumerate(point_history):
         if point[0] != 0 and point[1] != 0:
             cv.circle(image, (point[0], point[1]), 1 + int(index / 2),
@@ -674,8 +700,11 @@ def draw_point_history(image, point_history):
 
     return image
 
-
+# DRAW INFORMATION ON THE DISPLAY SCREEN ----------------------------------------------------------------------
 def draw_info(image, fps, mode, number):
+    ## This function draws information on the display screen
+    ## --------------------------------------------------------------------------------------------------------
+    
     cv.putText(image, "FPS:" + str(fps), (10, 30), cv.FONT_HERSHEY_SIMPLEX,
                1.0, (0, 0, 0), 4, cv.LINE_AA)
     cv.putText(image, "FPS:" + str(fps), (10, 30), cv.FONT_HERSHEY_SIMPLEX,
@@ -692,6 +721,6 @@ def draw_info(image, fps, mode, number):
                        cv.LINE_AA)
     return image
 
-
+# THE MAIN PROGRAM RUNS HERE ----------------------------------------------------------------------------------
 if __name__ == '__main__':
     main()
