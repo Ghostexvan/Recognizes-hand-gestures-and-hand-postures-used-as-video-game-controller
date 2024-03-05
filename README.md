@@ -5,3 +5,7 @@ This including:
 * Different hand gestures.
 * Different hand postures.
 * Modified mainly for using as an UI controller for videogames.
+
+# Hand Gesture Model Training Results
+## Confusion Matrix
+[Contribution guidelines for this project](graph/HandGestureModelConfusionMatrix.png)
