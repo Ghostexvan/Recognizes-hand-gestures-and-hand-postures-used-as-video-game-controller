@@ -8,7 +8,9 @@ This including:
 
 # How To Run
 Run this using your webcam
+<pre>
 `python app.py`
+</pre>
 
 # Directory
 <pre>
@@ -35,11 +37,28 @@ Run this using your webcam
     └─cvfpscalc.py
 </pre>
 
+# Data Labels
+## Hand Posture Labels
+| Index | Labels |
+| :---: | :---: |
+| `0` | Swipe |
+| `1` | Hold |
+| `2` | Pointer |
+| `3` | HoldFingerTip |
+## Hand Gesture Labels
+| Index | Labels |
+| :---: | :---: |
+| `0` | Stop |
+| `1` | SwipeUp |
+| `2` | SwipeDown |
+| `3` | SwipeLeft |
+| `4` | SwipeRight |
+
 # Model Structure
 ## Hand Posture Model Structure
-![plot](graph/HandPostureModelArchitecture.png)
+![plot](graph/HandPostureModelStructure.png)
 ## Hand Gesture Model Structure
-![plot](graph/HandGestureModelArchitecture.png)
+![plot](graph/HandGestureModelStructure.png)
 
 # Model Training Results
 ## Hand Posture Model Training Results
