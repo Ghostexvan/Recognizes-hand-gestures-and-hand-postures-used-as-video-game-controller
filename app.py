@@ -20,6 +20,7 @@ from utils import CvFpsCalc
 from model import KeyPointClassifier
 from model import PointHistoryClassifier
 from model import HandGestureClassifier
+from model import ThumbAndIndexFingerClassifier
 
 # SPECIFY THE PATH USED ---------------------------------------------------------------------------------------
 
@@ -137,6 +138,9 @@ def main():
     
     ## Set up the hand gesture classification model
     hand_gesture_classifier = HandGestureClassifier()
+    
+    ## Set up the thumb and index finger gesture classification model
+    thumb_and_index_finger_classifier = ThumbAndIndexFingerClassifier()
 
     ## Get labels for classification:
     ### <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -163,6 +167,14 @@ def main():
         hand_gesture_classifier_labels = [
             row[0] for row in hand_gesture_classifier_labels
         ]
+        
+    ### For thumb and index finger gesture classification
+    with open(os.path.join(dir_path, "model/thumb_and_index_finger_classifier/thumb_and_index_finger_classifier_label.csv"),
+              encoding='utf-8-sig') as f:
+        thumb_and_index_finger_classifier_labels = csv.reader(f)
+        thumb_and_index_finger_classifier_labels = [
+            row[0] for row in thumb_and_index_finger_classifier_labels
+        ]    
     ### >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     ## Display the camera's FPS
@@ -172,14 +184,20 @@ def main():
     history_length = 16
     point_history = deque(maxlen=history_length)
     
-    ## Landmark history length
+    ## Landmark history list
     landmark_history = deque(maxlen=42*history_length)
+    
+    ## Thumb and index finger history list
+    thumb_and_index_finger_history = deque(maxlen=history_length)
 
     ## Finger gesture classification history length
     finger_gesture_history = deque(maxlen=history_length)
     
     ## Hand gesture classification history length
     hand_gesture_history = deque(maxlen=history_length)
+    
+    ## Thumb and index finger classification history length
+    thumb_and_index_finger_gesture_history = deque(maxlen=history_length)
 
     ## Program mode
     mode = 0
@@ -252,6 +270,11 @@ def main():
                 ###### Hand landmark history data
                 pre_processed_point_history_list = pre_process_point_history(
                     debug_image, point_history)
+                
+                ###### Thumb and index finger history data
+                pre_processed_thumb_and_index_finger_history_list = pre_process_thumb_and_index_finger_history(
+                    debug_image, thumb_and_index_finger_history
+                )
                 ###### >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
                 
                 # ##### Store study data
@@ -268,13 +291,17 @@ def main():
                             mode, 
                             pre_processed_landmark_list,
                             pre_processed_point_history_list,
-                            landmark_history)
+                            landmark_history,
+                            pre_processed_thumb_and_index_finger_history_list)
                 
                 ##### Save index finger coordinate data
                 point_history.append(landmark_list[8])
                 
                 ##### Save landmark history data
                 landmark_history.extend(pre_processed_landmark_list)
+                
+                ##### Save thumb and index finger history data
+                thumb_and_index_finger_history.append([landmark_list[4], landmark_list[8]])
 
                 ##### Assign a recognized index finger gesture default ID
                 finger_gesture_id = 0
@@ -282,11 +309,17 @@ def main():
                 ##### Assign a recognized hand gesture default ID
                 hand_gesture_id = 0
                 
+                ##### Assign a recognized thumb and index finger gesture default ID
+                thumb_and_index_finger_id = 0
+                
                 ##### Get the length of the history of index finger data
                 point_history_len = len(pre_processed_point_history_list)
                 
                 ##### Get the length of the history of landmark data
                 landmark_history_len = len(landmark_history)
+                
+                ##### Get the length of the thumb and index finger data
+                thumb_and_index_finger_history_len = len(pre_processed_thumb_and_index_finger_history_list)
                 
                 ##### If the historical length is long enough
                 if point_history_len == (history_length * 2):
@@ -294,17 +327,24 @@ def main():
                     finger_gesture_id = point_history_classifier(
                         pre_processed_point_history_list)
                     
-                    
                 if landmark_history_len == history_length*42:
                     ###### Classification of index finger gestures
                     hand_gesture_id = hand_gesture_classifier(
                         landmark_history)
+                    
+                if thumb_and_index_finger_history_len == history_length*4:
+                    ###### Classification of thumb and index finger gestures
+                    thumb_and_index_finger_id = thumb_and_index_finger_classifier(
+                        pre_processed_thumb_and_index_finger_history_list)
 
                 ##### Save the index finger gesture ID that appear
                 finger_gesture_history.append(finger_gesture_id)
                 
                 ##### Save the hand gesture ID that appear
                 hand_gesture_history.append(hand_gesture_id)
+                
+                ##### Save the thumb and index finger gesture ID that appear
+                thumb_and_index_finger_gesture_history.append(thumb_and_index_finger_id)
                 
                 ##### Get the most frequently occurring index finger gesture IDs
                 most_common_fg_id = Counter(
@@ -313,6 +353,10 @@ def main():
                 ##### Get the most frequently occuring hand gesture IDs
                 most_common_hg_id = Counter(
                     hand_gesture_history).most_common()
+                
+                ##### Get the most frequently occuring thumb and index gesture IDs
+                most_common_tig_id = Counter(
+                    thumb_and_index_finger_gesture_history).most_common()
 
                 ##### Draw a border around the recognized hand
                 debug_image = draw_bounding_rect(use_brect, debug_image, brect)
@@ -328,16 +372,20 @@ def main():
                     keypoint_classifier_labels[hand_sign_id],
                     point_history_classifier_labels[most_common_fg_id[0][0]],
                     hand_gesture_classifier_labels[most_common_hg_id[0][0]],
+                    thumb_and_index_finger_classifier_labels[most_common_tig_id[0][0]],
                     str(len(landmark_list)),
                     str(str(landmark_list[8]))
                 )
         ### If there are no hand landmark identification results
         else:
-            #### Save empty hand landmark data to history
+            #### Save empty index finger data to history
             point_history.append([0, 0])
+            
+            #### Save empty thumb and index finger data to history
+            thumb_and_index_finger_history.append([[0, 0], [0, 0]])
 
         ### Draw the history of hand landmarks
-        if hand_sign_id==2 or mode==3:
+        if hand_sign_id==2 or mode>=3:
             debug_image = draw_point_history(debug_image, point_history)
         
         ### Draw information on the screen
@@ -376,13 +424,19 @@ def select_mode(key, mode):
         mode = 1
         
     if key == 104:  #### Key Code for H
-        #### Index finger gesture data recording mode, recorded with the number corresponding to each index finger gesture
+        #### Index finger gesture data recording mode, recorded with the number corresponding to each index 
+        #### finger gesture
         mode = 2
         
-    if key == 106:
-        #### Index finger gesture data recording mode, recorded by hand posture ID number and number corresponding to 
-        #### each index finger gesture
+    if key == 106:  #### Key Code for J
+        #### Hand gesture data recording mode, recorded with the number corresponding to each hand gesture
         mode = 3
+    
+    if key == 108:  #### Key Code for L
+        ##### Thumb and index finger data recording mode, recorded with the number corresponding to each thumb 
+        ##### and index finger gesture
+        mode = 4
+    
     ### >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     
     return number, mode
@@ -486,8 +540,46 @@ def pre_process_point_history(image, point_history):
 
     return temp_point_history
 
+def pre_process_thumb_and_index_finger_history(image, thumb_and_index_finger_history):
+    ## This function returns 
+    ## --------------------------------------------------------------------------------------------------------
+    
+    image_width, image_height = image.shape[1], image.shape[0]
+
+    temp_thumb_and_index_finger_history = copy.deepcopy(thumb_and_index_finger_history)
+    # print(temp_thumb_and_index_finger_history[0][0][0])
+
+    ## Convert to relative coordinates
+    thumb_base_x, thumb_base_y = 0, 0
+    index_base_x, index_base_y = 0, 0
+    for index, point in enumerate(temp_thumb_and_index_finger_history):
+        
+        if index == 0:
+            # print (point)
+            thumb_base_x, thumb_base_y = point[0][0], point[0][1]
+            index_base_x, index_base_y = point[1][0], point[1][1]
+
+        temp_thumb_and_index_finger_history[index][0][0] = (temp_thumb_and_index_finger_history[index][0][0] -
+                                                            thumb_base_x) / image_width
+        temp_thumb_and_index_finger_history[index][0][1] = (temp_thumb_and_index_finger_history[index][0][1] -
+                                                            thumb_base_y) / image_height
+        
+        temp_thumb_and_index_finger_history[index][1][0] = (temp_thumb_and_index_finger_history[index][1][0] -
+                                                            index_base_x) / image_width
+        temp_thumb_and_index_finger_history[index][1][1] = (temp_thumb_and_index_finger_history[index][1][1] -
+                                                            index_base_y) / image_height
+
+    ## Convert to 1D list
+    temp_thumb_and_index_finger_history = list(
+        itertools.chain.from_iterable(temp_thumb_and_index_finger_history))
+    
+    temp_thumb_and_index_finger_history = list(
+        itertools.chain.from_iterable(temp_thumb_and_index_finger_history))
+
+    return temp_thumb_and_index_finger_history
+
 # WRITE DATA TO CSV FILE --------------------------------------------------------------------------------------
-def logging_csv(number, mode, landmark_list, point_history_list, landmark_history_list):
+def logging_csv(number, mode, landmark_list, point_history_list, landmark_history_list, thumb_and_index_finger_history_list):
     ## This function writes the collected data to the path corresponding to the program mode
     ## --------------------------------------------------------------------------------------------------------
     
@@ -504,10 +596,15 @@ def logging_csv(number, mode, landmark_list, point_history_list, landmark_histor
             writer = csv.writer(f)
             writer.writerow([number, *point_history_list])
     if mode == 3 and (0 <= number <= 9):
-        csv_path = os.path.join(dir_path,'model/point_history_with_handsign_classifier/point_history_with_handsign.csv')
+        csv_path = os.path.join(dir_path,'model/hand_gesture_classifier/hand_gesture.csv')
         with open(csv_path, 'a', newline="") as f:
             writer = csv.writer(f)
             writer.writerow([number, *landmark_history_list])
+    if mode == 4 and (0 <= number <= 9):
+        csv_path = os.path.join(dir_path,'model/thumb_and_index_finger_classifier/thumb_and_index_finger.csv')
+        with open(csv_path, 'a', newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow([number, *thumb_and_index_finger_history_list])        
     return
 
 # DRAW HAND LANDMARKS ON THE SCREEN ---------------------------------------------------------------------------
@@ -721,7 +818,7 @@ def draw_bounding_rect(use_brect, image, brect):
 
 # DRAW TEXT INFORMATION ON THE DISPLAY SCREEN -----------------------------------------------------------------
 def draw_info_text(image, brect, handedness, hand_sign_text,
-                   finger_gesture_text, hand_gesture_text, landmark, index_coordinate):
+                   finger_gesture_text, hand_gesture_text, thumb_and_index_finger_gesture_text, landmark, index_coordinate):
     ## This function draws text information on the display screen
     ## --------------------------------------------------------------------------------------------------------
     
@@ -735,9 +832,9 @@ def draw_info_text(image, brect, handedness, hand_sign_text,
                cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv.LINE_AA)
 
     if finger_gesture_text != "":
-        cv.putText(image, "Finger Gesture:" + finger_gesture_text, (10, 70),
+        cv.putText(image, "Index Finger Gesture:" + finger_gesture_text, (10, 70),
                    cv.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 4, cv.LINE_AA)
-        cv.putText(image, "Finger Gesture:" + finger_gesture_text, (10, 70),
+        cv.putText(image, "Index Finger Gesture:" + finger_gesture_text, (10, 70),
                    cv.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2,
                    cv.LINE_AA)
         # cv.putText(image, landmark, (10, 110),
@@ -755,6 +852,13 @@ def draw_info_text(image, brect, handedness, hand_sign_text,
         cv.putText(image, "Hand Gesture:" + hand_gesture_text, (10, 110),
                    cv.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 4, cv.LINE_AA)
         cv.putText(image, "Hand Gesture:" + hand_gesture_text, (10, 110),
+                   cv.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2,
+                   cv.LINE_AA)
+    
+    if thumb_and_index_finger_gesture_text != "":
+        cv.putText(image, "Thumb and Index Finger Gesture:" + thumb_and_index_finger_gesture_text, (10, 150),
+                   cv.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 4, cv.LINE_AA)
+        cv.putText(image, "Thumb and Index Finger Gesture:" + thumb_and_index_finger_gesture_text, (10, 150),
                    cv.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2,
                    cv.LINE_AA)
         
@@ -782,8 +886,8 @@ def draw_info(image, fps, mode, number):
     cv.putText(image, "FPS:" + str(fps), (10, 30), cv.FONT_HERSHEY_SIMPLEX,
                1.0, (255, 255, 255), 2, cv.LINE_AA)
 
-    mode_string = ['Logging Hand Posture', 'Logging Index Finger Gesture', 'Logging Hand Gesture']
-    if 1 <= mode <= 3:
+    mode_string = ['Logging Hand Posture', 'Logging Index Finger Gesture', 'Logging Hand Gesture', 'Logging Thumb And Index Finger Gesture']
+    if 1 <= mode <= 4:
         cv.putText(image, "MODE:" + mode_string[mode - 1], (10, image.shape[0] - 20),
                    cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1,
                    cv.LINE_AA)

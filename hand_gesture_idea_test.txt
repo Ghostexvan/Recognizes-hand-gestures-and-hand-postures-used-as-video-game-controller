@@ -1,11 +1,12 @@
-Stop
+0. Stop
+1. PointerMove
 
-Select (Pointer) 		- Chọn
+2. Select (Pointer) 		- Chọn
 
-SwipeUp (Open)   		- Quẹt lên2222222222
-SwipeDown (Open)		- Quẹt xuống
-SwipeLeft (Open)		- Quẹt trái
-SwipeRight (Open)		- Quẹt phải
+3. SwipeUp (Open)   		- Quẹt lên
+4. SwipeDown (Open)		- Quẹt xuống
+5. SwipeLeft (Open)		- Quẹt trái
+6. SwipeRight (Open)		- Quẹt phải
 
-SlideLeft (HoldFingerTip)	- Kéo trái (VD: Giảm âm lượng...)
-SlideRight (HoldFingerTip)	- Kéo phải (VD: Tăng âm lượng...)
+7. SlideLeft (HoldFingerTip)	- Kéo trái (VD: Giảm âm lượng...)
+8. SlideRight (HoldFingerTip)	- Kéo phải (VD: Tăng âm lượng...)

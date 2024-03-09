@@ -1,3 +1,4 @@
 from model.keypoint_classifier.keypoint_classifier import KeyPointClassifier
 from model.point_history_classifier.point_history_classifier import PointHistoryClassifier
 from model.hand_gesture_classifier.hand_gesture_classifier import HandGestureClassifier
+from model.thumb_and_index_finger_classifier.thumb_and_index_finger_classifier import ThumbAndIndexFingerClassifier

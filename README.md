@@ -36,15 +36,22 @@ python app.py
 │  │  └─ keypoint_classifier_label.csv
 │  │          
 │  └─point_history_classifier
-│      │  point_history.csv
-│      │  point_history_classifier.keras
-│      │  point_history_classifier.py
-│      │  point_history_classifier.tflite
-│      └─ point_history_classifier_label.csv
-│          
+│  │   │  point_history.csv
+│  │   │  point_history_classifier.keras
+│  |   │  point_history_classifier.py
+│  |   │  point_history_classifier.tflite
+│  |   └─ point_history_classifier_label.csv
+│  │          
+│  └─thumb_and_index_finger_classifier
+│      │  thumb_and_index_finger.csv
+│      │  thumb_and_index_finger_classifier.keras
+│      │  thumb_and_index_finger_classifier.py
+│      │  thumb_and_index_finger_classifier.tflite
+│      └─ thumb_and_index_finger_classifier_label.csv        
 └─utils
     └─cvfpscalc.py
 </pre>
+
 ## app.py
 This is a sample program for inference.
 In addition, this can also be use to collect:
@@ -85,6 +92,14 @@ The following files are stored:
 * Label data (point_history_classifier_label.csv)
 * Inference module (point_history_classifier.py)
 
+## model/thumb_and_index_finger_classifier
+This directory stores files related to thumb and index finger gesture recognition.
+The following files are stored:
+* Training data (thumb_and_index_finger.csv)
+* Trained model (thumb_and_index_finger_classifier.tflite)
+* Label data (thumb_and_index_finger_classifier_label.csv)
+* Inference module (thumb_and_index_finger_classifier.py)
+
 ## utils/cvfpscalc.py
 This is a module for FPS measurement.
 
@@ -96,6 +111,7 @@ This is a module for FPS measurement.
 | `1` | Hold |
 | `2` | Pointer |
 | `3` | HoldFingerTip |
+
 ## Index Finger Gesture Labels
 | Index | Labels |
 | :---: | :---: |
@@ -104,6 +120,7 @@ This is a module for FPS measurement.
 | `2` | SwipeDown |
 | `3` | SwipeLeft |
 | `4` | SwipeRight |
+
 ## Hand Gesture Labels
 | Index | Labels |
 | :---: | :---: |
@@ -115,14 +132,33 @@ This is a module for FPS measurement.
 | `5` | SwipeRight |
 | `6` | SlideLeft |
 | `7` | SlideRight |
+| `8` | PointerMove |
+
+## Thumb And Index Finger Gesture Labels
+| Index | Labels |
+| :---: | :---: |
+| `0` | Stop |
+| `1` | PointerMove |
+| `2` | Select |
+| `3` | SwipeUp |
+| `4` | SwipeDown |
+| `5` | SwipeLeft |
+| `6` | SwipeRight |
+| `7` | SlideLeft |
+| `8` | SlideRight |
 
 # *Model Structure*
 ## Hand Posture Model Structure
 ![plot](graph/HandPostureModelStructure.png)
+
 ## Index Finger Gesture Structure
 ![plot](graph/IndexFingerGestureModelStructure.png)
+
 ## Hand Gesture Model Structure
 ![plot](graph/HandGestureModelStructure.png)
+
+## Thumb And Index Finger Gesture Model Structure
+![plot](graph/ThumbAndIndexFingerGestureModelStructure.png)
 
 # Model Training Results
 ## Hand Posture Model Training Results
@@ -142,3 +178,9 @@ This is a module for FPS measurement.
 ![plot](graph/HandGestureModelConfusionMatrix.png)
 ### Training History
 ![plot](graph/HandGestureModelTrainingHistory.png)
+
+## Thumb And Index Finger Gesture Model Training Results
+### Confusion Matrix
+![plot](graph/ThumbAndIndexFingerGestureModelConfusionMatrix.png)
+### Training History
+![plot](graph/ThumbAndIndexFingerGestureModelTrainingHistory.png)
