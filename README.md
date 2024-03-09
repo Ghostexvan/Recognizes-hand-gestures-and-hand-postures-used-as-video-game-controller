@@ -120,7 +120,7 @@ This is a module for FPS measurement.
 ## Hand Posture Model Structure
 ![plot](graph/HandPostureModelStructure.png)
 ## Index Finger Gesture Structure
-![plot](graph/IndexFingerGestureStructure.png)
+![plot](graph/IndexFingerGestureModelStructure.png)
 ## Hand Gesture Model Structure
 ![plot](graph/HandGestureModelStructure.png)
 
