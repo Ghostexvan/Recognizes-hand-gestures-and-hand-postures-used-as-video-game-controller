@@ -7,13 +7,13 @@ This including:
 * Add hand gestures.
 * Modified mainly for using as an UI controller for videogames.
 
-# How To Run
-Here's how to run this using your webcam
-<pre>
-`python app.py`
-</pre>
+# *How To Run*
+Here's how to run this using your webcam.
+```bash
+python app.py
+```
 
-# Directory
+# *Directory*
 <pre>
 │  app.py
 │  hand_gesture_classification.ipynb
@@ -88,7 +88,7 @@ The following files are stored:
 ## utils/cvfpscalc.py
 This is a module for FPS measurement.
 
-# Data Labels
+# *Data Labels*
 ## Hand Posture Labels
 | Index | Labels |
 | :---: | :---: |
@@ -116,7 +116,7 @@ This is a module for FPS measurement.
 | `6` | SlideLeft |
 | `7` | SlideRight |
 
-# Model Structure
+# *Model Structure*
 ## Hand Posture Model Structure
 ![plot](graph/HandPostureModelStructure.png)
 ## Index Finger Gesture Structure
