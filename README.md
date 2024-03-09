@@ -19,6 +19,7 @@ python app.py
 │  hand_gesture_classification.ipynb
 │  keypoint_classification.ipynb
 │  point_history_classification.ipynb
+|  thumb_and_index_finger_classification.ipynb
 │  
 ├─model
 │  ├─hand_gesture_classifier
@@ -67,6 +68,9 @@ This is a model training script for hand posture recognition.
 
 ## point_history_classification.ipynb
 This is a model training script for index finger gesture recognition.
+
+## thumb_and_index_finger_classification.ipynb
+This is a model training script for thumb and index finger gesture recognition.
 
 ## model/hand_gesture_classifier
 This directory stores files related to hand gesture recognition.
