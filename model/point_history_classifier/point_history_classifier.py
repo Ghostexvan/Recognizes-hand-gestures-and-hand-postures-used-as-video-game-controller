@@ -6,7 +6,7 @@ import os
 
 full_path = os.path.realpath(__file__)
 dir_path = os.path.dirname(full_path)
-print("Initiate Hand Gesture Classification, file at:" + os.path.dirname(full_path))
+print("Initiate Index Finger Gesture Classification, file at:" + os.path.dirname(full_path))
 
 class PointHistoryClassifier(object):
     def __init__(

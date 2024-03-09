@@ -19,6 +19,7 @@ from utils import CvFpsCalc
 
 from model import KeyPointClassifier
 from model import PointHistoryClassifier
+from model import HandGestureClassifier
 
 # SPECIFY THE PATH USED ---------------------------------------------------------------------------------------
 
@@ -131,8 +132,11 @@ def main():
     ## Set up the hand posture classification model
     keypoint_classifier = KeyPointClassifier()
 
-    ## Set up the hand gesture classification model
+    ## Set up the index finger gesture classification model
     point_history_classifier = PointHistoryClassifier()
+    
+    ## Set up the hand gesture classification model
+    hand_gesture_classifier = HandGestureClassifier()
 
     ## Get labels for classification:
     ### <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -144,12 +148,20 @@ def main():
             row[0] for row in keypoint_classifier_labels
         ]
     
-    ### For hand gesture classification
+    ### For index finger gesture classification
     with open(os.path.join(dir_path, "model/point_history_classifier/point_history_classifier_label.csv"),
               encoding='utf-8-sig') as f:
         point_history_classifier_labels = csv.reader(f)
         point_history_classifier_labels = [
             row[0] for row in point_history_classifier_labels
+        ]
+        
+    ### For hand gesture classification
+    with open(os.path.join(dir_path, "model/hand_gesture_classifier/hand_gesture_classifier_label.csv"),
+              encoding='utf-8-sig') as f:
+        hand_gesture_classifier_labels = csv.reader(f)
+        hand_gesture_classifier_labels = [
+            row[0] for row in hand_gesture_classifier_labels
         ]
     ### >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -159,9 +171,15 @@ def main():
     ## Point history list
     history_length = 16
     point_history = deque(maxlen=history_length)
+    
+    ## Landmark history length
+    landmark_history = deque(maxlen=42*history_length)
 
-    ## Finger gesture classification history
+    ## Finger gesture classification history length
     finger_gesture_history = deque(maxlen=history_length)
+    
+    ## Hand gesture classification history length
+    hand_gesture_history = deque(maxlen=history_length)
 
     ## Program mode
     mode = 0
@@ -207,6 +225,8 @@ def main():
         
         ### Unlock the image data
         image.flags.writeable = True
+        
+        hand_sign_id=-1
 
         ### If there are results of hand landmarks recognition
         if results.multi_hand_landmarks is not None:
@@ -234,36 +254,65 @@ def main():
                     debug_image, point_history)
                 ###### >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
                 
-                ##### Store study data
-                logging_csv(number, 
-                            mode, 
-                            pre_processed_landmark_list,
-                            pre_processed_point_history_list)
+                # ##### Store study data
+                # logging_csv(number, 
+                #             mode, 
+                #             pre_processed_landmark_list,
+                #             pre_processed_point_history_list)
 
                 ##### Classification of hand posture
                 hand_sign_id = keypoint_classifier(pre_processed_landmark_list)
                 
-                ##### Save hand landmark data into history
+                ##### Store study data
+                logging_csv(number, 
+                            mode, 
+                            pre_processed_landmark_list,
+                            pre_processed_point_history_list,
+                            landmark_history)
+                
+                ##### Save index finger coordinate data
                 point_history.append(landmark_list[8])
+                
+                ##### Save landmark history data
+                landmark_history.extend(pre_processed_landmark_list)
 
-                ##### Assign a recognized hand pose default ID
+                ##### Assign a recognized index finger gesture default ID
                 finger_gesture_id = 0
                 
-                ##### Get the length of the hand data history
+                ##### Assign a recognized hand gesture default ID
+                hand_gesture_id = 0
+                
+                ##### Get the length of the history of index finger data
                 point_history_len = len(pre_processed_point_history_list)
+                
+                ##### Get the length of the history of landmark data
+                landmark_history_len = len(landmark_history)
                 
                 ##### If the historical length is long enough
                 if point_history_len == (history_length * 2):
-                    ###### Classification of hand gestures
+                    ###### Classification of index finger gestures
                     finger_gesture_id = point_history_classifier(
                         pre_processed_point_history_list)
+                    
+                    
+                if landmark_history_len == history_length*42:
+                    ###### Classification of index finger gestures
+                    hand_gesture_id = hand_gesture_classifier(
+                        landmark_history)
 
-                ##### Save the hand gesture IDs that appear
+                ##### Save the index finger gesture ID that appear
                 finger_gesture_history.append(finger_gesture_id)
                 
-                ##### Get the most frequently occurring hand gesture IDs
+                ##### Save the hand gesture ID that appear
+                hand_gesture_history.append(hand_gesture_id)
+                
+                ##### Get the most frequently occurring index finger gesture IDs
                 most_common_fg_id = Counter(
                     finger_gesture_history).most_common()
+                
+                ##### Get the most frequently occuring hand gesture IDs
+                most_common_hg_id = Counter(
+                    hand_gesture_history).most_common()
 
                 ##### Draw a border around the recognized hand
                 debug_image = draw_bounding_rect(use_brect, debug_image, brect)
@@ -278,6 +327,7 @@ def main():
                     handedness,
                     keypoint_classifier_labels[hand_sign_id],
                     point_history_classifier_labels[most_common_fg_id[0][0]],
+                    hand_gesture_classifier_labels[most_common_hg_id[0][0]],
                     str(len(landmark_list)),
                     str(str(landmark_list[8]))
                 )
@@ -287,13 +337,14 @@ def main():
             point_history.append([0, 0])
 
         ### Draw the history of hand landmarks
-        debug_image = draw_point_history(debug_image, point_history)
+        if hand_sign_id==2 or mode==3:
+            debug_image = draw_point_history(debug_image, point_history)
         
         ### Draw information on the screen
         debug_image = draw_info(debug_image, fps, mode, number)
 
         ### Display results on the screen
-        cv.imshow('Hand Gesture Recognition', debug_image)
+        cv.imshow('Index Finger Gesture Recognition', debug_image)
 
     ## Turn off the camera
     cap.release()
@@ -325,8 +376,13 @@ def select_mode(key, mode):
         mode = 1
         
     if key == 104:  #### Key Code for H
-        #### Hand gesture data recording mode, recorded with the number corresponding to each hand gesture
+        #### Index finger gesture data recording mode, recorded with the number corresponding to each index finger gesture
         mode = 2
+        
+    if key == 106:
+        #### Index finger gesture data recording mode, recorded by hand posture ID number and number corresponding to 
+        #### each index finger gesture
+        mode = 3
     ### >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     
     return number, mode
@@ -377,6 +433,7 @@ def pre_process_landmark(landmark_list):
     ## --------------------------------------------------------------------------------------------------------
     
     temp_landmark_list = copy.deepcopy(landmark_list)
+    # print("[INFO] Length of landmark list before list: ", len(temp_landmark_list), " with shape: ", np.array(temp_landmark_list).shape)
 
     ## Convert to relative coordinates
     base_x, base_y = 0, 0
@@ -390,6 +447,7 @@ def pre_process_landmark(landmark_list):
     ## Convert to 1D list
     temp_landmark_list = list(
         itertools.chain.from_iterable(temp_landmark_list))
+    # print("[INFO] Length of landmark list after chain: ", len(temp_landmark_list), " with shape: ", np.array(temp_landmark_list).shape)
 
     ## Normalization
     max_value = max(list(map(abs, temp_landmark_list)))
@@ -398,6 +456,7 @@ def pre_process_landmark(landmark_list):
         return n / max_value
 
     temp_landmark_list = list(map(normalize_, temp_landmark_list))
+    # print("[INFO] Length of landmark list after map: ", len(temp_landmark_list), " with shape: ", np.array(temp_landmark_list).shape)
 
     return temp_landmark_list
 
@@ -428,7 +487,7 @@ def pre_process_point_history(image, point_history):
     return temp_point_history
 
 # WRITE DATA TO CSV FILE --------------------------------------------------------------------------------------
-def logging_csv(number, mode, landmark_list, point_history_list):
+def logging_csv(number, mode, landmark_list, point_history_list, landmark_history_list):
     ## This function writes the collected data to the path corresponding to the program mode
     ## --------------------------------------------------------------------------------------------------------
     
@@ -444,6 +503,11 @@ def logging_csv(number, mode, landmark_list, point_history_list):
         with open(csv_path, 'a', newline="") as f:
             writer = csv.writer(f)
             writer.writerow([number, *point_history_list])
+    if mode == 3 and (0 <= number <= 9):
+        csv_path = os.path.join(dir_path,'model/point_history_with_handsign_classifier/point_history_with_handsign.csv')
+        with open(csv_path, 'a', newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow([number, *landmark_history_list])
     return
 
 # DRAW HAND LANDMARKS ON THE SCREEN ---------------------------------------------------------------------------
@@ -657,7 +721,7 @@ def draw_bounding_rect(use_brect, image, brect):
 
 # DRAW TEXT INFORMATION ON THE DISPLAY SCREEN -----------------------------------------------------------------
 def draw_info_text(image, brect, handedness, hand_sign_text,
-                   finger_gesture_text, landmark, index_coordinate):
+                   finger_gesture_text, hand_gesture_text, landmark, index_coordinate):
     ## This function draws text information on the display screen
     ## --------------------------------------------------------------------------------------------------------
     
@@ -676,16 +740,24 @@ def draw_info_text(image, brect, handedness, hand_sign_text,
         cv.putText(image, "Finger Gesture:" + finger_gesture_text, (10, 70),
                    cv.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2,
                    cv.LINE_AA)
-        cv.putText(image, landmark, (10, 110),
+        # cv.putText(image, landmark, (10, 110),
+        #            cv.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 4, cv.LINE_AA)
+        # cv.putText(image, landmark, (10, 110),
+        #            cv.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2,
+        #            cv.LINE_AA)
+        # cv.putText(image, index_coordinate, (10, 150),
+        #            cv.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 4, cv.LINE_AA)
+        # cv.putText(image, index_coordinate, (10, 150),
+        #            cv.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2,
+        #            cv.LINE_AA)
+        
+    if hand_gesture_text != "":
+        cv.putText(image, "Hand Gesture:" + hand_gesture_text, (10, 110),
                    cv.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 4, cv.LINE_AA)
-        cv.putText(image, landmark, (10, 110),
+        cv.putText(image, "Hand Gesture:" + hand_gesture_text, (10, 110),
                    cv.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2,
                    cv.LINE_AA)
-        cv.putText(image, index_coordinate, (10, 150),
-                   cv.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 4, cv.LINE_AA)
-        cv.putText(image, index_coordinate, (10, 150),
-                   cv.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2,
-                   cv.LINE_AA)
+        
     return image
 
 # DRAW THE HISTORY OF HAND LANDMARKS ON THE DISPLAY SCREEN ----------------------------------------------------
@@ -710,13 +782,13 @@ def draw_info(image, fps, mode, number):
     cv.putText(image, "FPS:" + str(fps), (10, 30), cv.FONT_HERSHEY_SIMPLEX,
                1.0, (255, 255, 255), 2, cv.LINE_AA)
 
-    mode_string = ['Logging Key Point', 'Logging Point History']
-    if 1 <= mode <= 2:
-        cv.putText(image, "MODE:" + mode_string[mode - 1], (10, 90),
+    mode_string = ['Logging Hand Posture', 'Logging Index Finger Gesture', 'Logging Hand Gesture']
+    if 1 <= mode <= 3:
+        cv.putText(image, "MODE:" + mode_string[mode - 1], (10, image.shape[0] - 20),
                    cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1,
                    cv.LINE_AA)
         if 0 <= number <= 9:
-            cv.putText(image, "NUM:" + str(number), (10, 110),
+            cv.putText(image, "NUM:" + str(number), (10, image.shape[0] - 40),
                        cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1,
                        cv.LINE_AA)
     return image
