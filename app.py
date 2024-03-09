@@ -185,7 +185,7 @@ def main():
     point_history = deque(maxlen=history_length)
     
     ## Landmark history list
-    landmark_history = deque(maxlen=42*history_length)
+    landmark_history = deque(maxlen=history_length)
     
     ## Thumb and index finger history list
     thumb_and_index_finger_history = deque(maxlen=history_length)
@@ -267,9 +267,13 @@ def main():
                     landmark_list
                 )
                 
-                ###### Hand landmark history data
+                ###### Index finger history data
                 pre_processed_point_history_list = pre_process_point_history(
                     debug_image, point_history)
+                
+                ###### Hand landmark history data
+                pre_processed_hand_landmark_history_list = pre_process_hand_landmark_history(
+                    debug_image, landmark_history)
                 
                 ###### Thumb and index finger history data
                 pre_processed_thumb_and_index_finger_history_list = pre_process_thumb_and_index_finger_history(
@@ -291,14 +295,14 @@ def main():
                             mode, 
                             pre_processed_landmark_list,
                             pre_processed_point_history_list,
-                            landmark_history,
+                            pre_processed_hand_landmark_history_list,
                             pre_processed_thumb_and_index_finger_history_list)
                 
                 ##### Save index finger coordinate data
                 point_history.append(landmark_list[8])
                 
                 ##### Save landmark history data
-                landmark_history.extend(pre_processed_landmark_list)
+                landmark_history.append(landmark_list)
                 
                 ##### Save thumb and index finger history data
                 thumb_and_index_finger_history.append([landmark_list[4], landmark_list[8]])
@@ -316,7 +320,7 @@ def main():
                 point_history_len = len(pre_processed_point_history_list)
                 
                 ##### Get the length of the history of landmark data
-                landmark_history_len = len(landmark_history)
+                landmark_history_len = len(pre_processed_hand_landmark_history_list)
                 
                 ##### Get the length of the thumb and index finger data
                 thumb_and_index_finger_history_len = len(pre_processed_thumb_and_index_finger_history_list)
@@ -330,7 +334,7 @@ def main():
                 if landmark_history_len == history_length*42:
                     ###### Classification of index finger gestures
                     hand_gesture_id = hand_gesture_classifier(
-                        landmark_history)
+                        pre_processed_hand_landmark_history_list)
                     
                 if thumb_and_index_finger_history_len == history_length*4:
                     ###### Classification of thumb and index finger gestures
@@ -539,6 +543,37 @@ def pre_process_point_history(image, point_history):
         itertools.chain.from_iterable(temp_point_history))
 
     return temp_point_history
+
+def pre_process_hand_landmark_history(image, hand_landmark_history):
+    ## This function returns 
+    ## --------------------------------------------------------------------------------------------------------
+    
+    image_width, image_height = image.shape[1], image.shape[0]
+
+    temp_hand_landmark_history = copy.deepcopy(hand_landmark_history)
+    
+    base = [[None for _ in range(2)] for _ in range(21)]
+
+    ## Convert to relative coordinates
+    for index, point in enumerate(temp_hand_landmark_history):
+        if index == 0:
+            for _index, _point in enumerate(point):
+                base[_index][0], base[_index][1] = _point[0], _point[1]
+                
+        for _index, _point in enumerate(point):
+                temp_hand_landmark_history[index][_index][0] = (temp_hand_landmark_history[index][_index][0] - 
+                                                                base[_index][0]) / image_width
+                temp_hand_landmark_history[index][_index][1] = (temp_hand_landmark_history[index][_index][1] - 
+                                                                base[_index][1]) / image_height
+
+    ## Convert to 1D list
+    temp_hand_landmark_history = list(
+        itertools.chain.from_iterable(temp_hand_landmark_history))
+    
+    temp_hand_landmark_history = list(
+        itertools.chain.from_iterable(temp_hand_landmark_history))
+
+    return temp_hand_landmark_history
 
 def pre_process_thumb_and_index_finger_history(image, thumb_and_index_finger_history):
     ## This function returns 

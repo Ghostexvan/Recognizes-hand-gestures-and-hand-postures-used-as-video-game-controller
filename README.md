@@ -129,14 +129,15 @@ This is a module for FPS measurement.
 | Index | Labels |
 | :---: | :---: |
 | `0` | Stop |
-| `1` | Select |
-| `2` | SwipeUp |
-| `3` | SwipeDown |
-| `4` | SwipeLeft |
-| `5` | SwipeRight |
-| `6` | SlideLeft |
-| `7` | SlideRight |
-| `8` | PointerMove |
+| `1` | PointerMove |
+| `2` | Select |
+| `3` | SwipeUp |
+| `4` | SwipeDown |
+| `5` | SwipeLeft |
+| `6` | SwipeRight |
+| `7` | SlideLeft |
+| `8` | SlideRight |
+
 
 ## Thumb And Index Finger Gesture Labels
 | Index | Labels |
