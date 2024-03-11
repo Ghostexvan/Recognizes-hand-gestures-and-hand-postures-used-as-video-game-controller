@@ -10,3 +10,12 @@
 
 7. SlideLeft (HoldFingerTip)	- Kéo trái (VD: Giảm âm lượng...)
 8. SlideRight (HoldFingerTip)	- Kéo phải (VD: Tăng âm lượng...)
+
+
+|  | Open | Back | Pointer | Pinch | Select |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| Stop | Wait | Return | Mouse | Slide | Click |
+| Up | SwipeUp | Return | Mouse | SlideUp | Click |
+| Down | SwipeDown | Return | Mouse | SlideDown | Click |
+| Left | SwipeLeft | Return | Mouse | SlideLeft | Click |
+| Right | SwipeRight | Return | Mouse | SlideRight | Click |

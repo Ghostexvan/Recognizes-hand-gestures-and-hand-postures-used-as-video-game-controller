@@ -111,19 +111,20 @@ This is a module for FPS measurement.
 ## Hand Posture Labels
 | Index | Labels |
 | :---: | :---: |
-| `0` | Swipe |
-| `1` | Hold |
+| `0` | Open |
+| `1` | Back |
 | `2` | Pointer |
-| `3` | HoldFingerTip |
+| `3` | Pinch |
+| `4` | ThumbOut |
 
 ## Index Finger Gesture Labels
 | Index | Labels |
 | :---: | :---: |
 | `0` | Stop |
-| `1` | SwipeUp |
-| `2` | SwipeDown |
-| `3` | SwipeLeft |
-| `4` | SwipeRight |
+| `1` | Up |
+| `2` | Down |
+| `3` | Left |
+| `4` | Right |
 
 ## Hand Gesture Labels
 | Index | Labels |
@@ -189,3 +190,14 @@ This is a module for FPS measurement.
 ![plot](graph/ThumbAndIndexFingerGestureModelConfusionMatrix.png)
 ### Training History
 ![plot](graph/ThumbAndIndexFingerGestureModelTrainingHistory.png)
+
+# Video Game Controller
+This app uses the combination of hand posture and index finger gestures to output corresponding control commands for the game.
+The corresponding control command is given in the following table:
+|  | `Open` | `Back` | `Pointer` | `Pinch` | `ThumbOut` |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| `Stop` | Wait | Return | Mouse | Slide | Click |
+| `Up` | SwipeUp | Return | Mouse | SlideUp | Click |
+| `Down` | SwipeDown | Return | Mouse | SlideDown | Click |
+| `Left` | SwipeLeft | Return | Mouse | SlideLeft | Click |
+| `Right` | SwipeRight | Return | Mouse | SlideRight | Click |
