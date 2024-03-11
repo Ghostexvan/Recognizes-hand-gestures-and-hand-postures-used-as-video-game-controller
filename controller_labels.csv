@@ -1,0 +1,5 @@
+Wait,Return,Mouse,Wait,Click
+SwipeUp,Return,Mouse,SlideUp,Click
+SwipeDown,Return,Mouse,SlideDown,Click
+SwipeLeft,Return,Mouse,SlideLeft,Click
+SwipeRight,Return,Mouse,SlideRight,Click
