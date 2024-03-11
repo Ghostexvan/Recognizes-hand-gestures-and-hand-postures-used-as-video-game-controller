@@ -4,8 +4,9 @@ This including:
 * Different dataset.
 * Different hand postures.
 * Different index finger gestures.
-* Add hand gestures.
-* Modified mainly for using as an UI controller for videogames.
+* Add hand gestures (included training dataset and training model).
+* Add thumb and index finger gestures (included training dataset and training model).
+* Modified mainly for using as an *UI controller for videogames*.
 
 # *How To Run*
 Here's how to run this using your webcam.
@@ -196,7 +197,7 @@ This app uses the combination of hand posture and index finger gestures to outpu
 The corresponding control command is given in the following table:
 |  | `Open` | `Back` | `Pointer` | `Pinch` | `ThumbOut` |
 | :---: | :---: | :---: | :---: | :---: | :---: |
-| `Stop` | Wait | Return | Mouse | Slide | Click |
+| `Stop` | Wait | Return | Mouse | Wait | Click |
 | `Up` | SwipeUp | Return | Mouse | SlideUp | Click |
 | `Down` | SwipeDown | Return | Mouse | SlideDown | Click |
 | `Left` | SwipeLeft | Return | Mouse | SlideLeft | Click |
