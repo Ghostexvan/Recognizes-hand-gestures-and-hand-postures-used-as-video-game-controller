@@ -121,10 +121,10 @@ This is a module for FPS measurement.
 ## *Hand Posture Recognition Model*
 ### Training
 #### 1. Learning data collection
-Press "k" to enter Key Points Saving mode (displayed as [Mode:Logging Key Point])
+Press "k" to enter Key Points Saving mode (displayed as [Mode:Logging Key Point]).<br>
 Press "0" to "9" to add the currently displaying keypoints to "model/keypoint_classifier/keypoint.csv" with corresponding label to the number key pressed.
 #### 2. Model training
-Open "keypoint_classification.ipynb" in Jupyter Notebook and execute from top to bottom.
+Open "keypoint_classification.ipynb" in Jupyter Notebook and execute from top to bottom.<br>
 Change the value of "NUM_CLASSES" corresponding to the number of training data classes and modify the label of "model/keypoint_classifier/keypoint_classifier_label.csv" as appropriate.
 ### Model Structure
 ![plot](graph/HandPostureModelStructure.png)
@@ -145,10 +145,10 @@ Change the value of "NUM_CLASSES" corresponding to the number of training data c
 ## *Index Finger Gesture Recognition Model*
 ### Training
 #### 1. Learning data collection
-Press "h" to enter Index Finger Coordinate Saving mode (displayed as [Mode:Logging Point History])
+Press "h" to enter Index Finger Coordinate Saving mode (displayed as [Mode:Logging Point History]).<br>
 Press "0" to "9" to add the coordinate of the index finger from the 16 most recent frames to "model/point_history_classifier/point_history.csv" with corresponding label to the number key pressed.
 #### 2. Model training
-Open "point_history_classification.ipynb" in Jupyter Notebook and execute from top to bottom.
+Open "point_history_classification.ipynb" in Jupyter Notebook and execute from top to bottom.<br>
 Change the value of "NUM_CLASSES" corresponding to the number of training data classes and modify the label of "model/point_history_classifier/point_history_classifier_label.csv" as appropriate.
 ### Model Structure
 ![plot](graph/IndexFingerGestureModelStructure.png)
@@ -169,10 +169,10 @@ Change the value of "NUM_CLASSES" corresponding to the number of training data c
 ## *Hand Gesture Recognition Model*
 ### Training
 #### 1. Learning data collection
-Press "j" to enter Hand Landmark Saving mode (displayed as [Mode:Logging Hand Gesture])
+Press "j" to enter Hand Landmark Saving mode (displayed as [Mode:Logging Hand Gesture]).<br>
 Press "0" to "9" to add the hand landmark from the 16 most recent frames to "model/hand_gesture_classifier/hand_gesture.csv" with corresponding label to the number key pressed.
 #### 2. Model training
-Open "hand_gesture_classification.ipynb" in Jupyter Notebook and execute from top to bottom.
+Open "hand_gesture_classification.ipynb" in Jupyter Notebook and execute from top to bottom.<br>
 Change the value of "NUM_CLASSES" corresponding to the number of training data classes and modify the label of "model/hand_gesture_classifier/hand_gesture_classifier_label.csv" as appropriate.
 ### Model Structure
 ![plot](graph/HandGestureModelStructure.png)
@@ -197,10 +197,10 @@ Change the value of "NUM_CLASSES" corresponding to the number of training data c
 ## *Thumb And Index Finger Gesture Recognition Model*
 ### Training
 #### 1. Learning data collection
-Press "l" to enter Thumb And Index Finger Saving mode (displayed as [Mode:Logging Thumb And Index Finger Gesture])
+Press "l" to enter Thumb And Index Finger Saving mode (displayed as [Mode:Logging Thumb And Index Finger Gesture]).<br>
 Press "0" to "9" to add the thumb and index finger coordinate from the 16 most recent frames to "model/thumb_and_index_finger_classifier/thumb_and_index_finger.csv" with corresponding label to the number key pressed.
 #### 2. Model training
-Open "thumb_and_index_finger_classification.ipynb" in Jupyter Notebook and execute from top to bottom.
+Open "thumb_and_index_finger_classification.ipynb" in Jupyter Notebook and execute from top to bottom.<br>
 Change the value of "NUM_CLASSES" corresponding to the number of training data classes and modify the label of "model/thumb_and_index_finger_classifier/thumb_and_index_finger_classifier_label.csv" as appropriate.
 ### Model Structure
 ![plot](graph/ThumbAndIndexFingerGestureModelStructure.png)
@@ -223,7 +223,7 @@ Change the value of "NUM_CLASSES" corresponding to the number of training data c
 ![plot](graph/ThumbAndIndexFingerGestureModelTrainingHistory.png)
 
 # **Video Game Controller**
-This app uses the combination of hand posture and index finger gestures to output corresponding control commands for the game.
+This app uses the combination of hand posture and index finger gestures to output corresponding control commands for the game.<br>
 The corresponding control command is given in the following table:
 |  | `Open` | `Back` | `Pointer` | `Pinch` | `ThumbOut` |
 | :---: | :---: | :---: | :---: | :---: | :---: |
