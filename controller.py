@@ -10,6 +10,7 @@ from collections import Counter
 from collections import deque
 
 import os
+os.environ["OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS"] = "0"
 
 import cv2 as cv
 import numpy as np
@@ -276,6 +277,10 @@ def main():
                 ##### Draw hand landmarks on the recognized hand
                 debug_image = draw_landmarks(debug_image, landmark_list)
                 
+                get_sending_info(debug_image, 
+                                 controller_labels[most_common_fg_id[0][0]][hand_sign_id],
+                                 landmark_list[8])
+                
                 ##### Draw text information on the screen
                 debug_image = draw_info_text(
                     debug_image,
@@ -298,7 +303,7 @@ def main():
         debug_image = draw_info(debug_image, fps)
 
         ### Display results on the screen
-        cv.imshow('Index Finger Gesture Recognition', debug_image)
+        cv.imshow('Hand Gesture Controller', debug_image)
 
     ## Turn off the camera
     cap.release()
@@ -668,6 +673,13 @@ def draw_info(image, fps):
                1.0, (255, 255, 255), 2, cv.LINE_AA)
 
     return image
+
+def get_sending_info(image, controller_command_text, index_finger_coordinate):
+    image_width, image_height = image.shape[1], image.shape[0]
+    sending_data = (controller_command_text + '-' 
+                    + str(index_finger_coordinate[0]/image_width) + '-' 
+                    + str(index_finger_coordinate[1]/image_height))
+    print(sending_data)
 
 # THE MAIN PROGRAM RUNS HERE ----------------------------------------------------------------------------------
 if __name__ == '__main__':
