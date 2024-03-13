@@ -21,6 +21,8 @@ from utils import CvFpsCalc
 from model import KeyPointClassifier
 from model import PointHistoryClassifier
 
+import socket
+
 # SPECIFY THE PATH USED ---------------------------------------------------------------------------------------
 
 ## Path to this file
@@ -28,6 +30,14 @@ full_path = os.path.realpath(__file__)
 
 ## Path to the directory containing this file
 dir_path = os.path.dirname(full_path)
+
+# SPECIFY SOCKET ATTRIBUTES -----------------------------------------------------------------------------------
+
+UDP_IP = "127.0.0.1"
+UDP_PORT = 27001
+
+# CREATE SOCKET CONNECTION ------------------------------------------------------------------------------------
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 # PASS THE NECESSARY ARGUMENTS --------------------------------------------------------------------------------
 def get_args():
@@ -182,6 +192,8 @@ def main():
         
         ### If the key pressed is ESC
         if key == 27: #### Key Code for ESC
+            #### Close the connection
+            sock.close()
             #### Exit the program
             break
 
@@ -277,9 +289,10 @@ def main():
                 ##### Draw hand landmarks on the recognized hand
                 debug_image = draw_landmarks(debug_image, landmark_list)
                 
-                get_sending_info(debug_image, 
+                sending_data = get_sending_info(debug_image, 
                                  controller_labels[most_common_fg_id[0][0]][hand_sign_id],
                                  landmark_list[8])
+                send_data(sock, UDP_IP, UDP_PORT, sending_data)
                 
                 ##### Draw text information on the screen
                 debug_image = draw_info_text(
@@ -679,7 +692,12 @@ def get_sending_info(image, controller_command_text, index_finger_coordinate):
     sending_data = (controller_command_text + '-' 
                     + str(index_finger_coordinate[0]/image_width) + '-' 
                     + str(index_finger_coordinate[1]/image_height))
-    print(sending_data)
+    return sending_data
+    
+def send_data(sock, IP, PORT, data, debug=True):
+    sock.sendto(data.encode("UTF-8"), (IP, PORT))
+    if debug:
+        print("Sending data: ", data)
 
 # THE MAIN PROGRAM RUNS HERE ----------------------------------------------------------------------------------
 if __name__ == '__main__':
