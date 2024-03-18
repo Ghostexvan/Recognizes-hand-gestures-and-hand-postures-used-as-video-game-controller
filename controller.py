@@ -292,7 +292,7 @@ def main():
                 sending_data = get_sending_info(debug_image, 
                                  controller_labels[most_common_fg_id[0][0]][hand_sign_id],
                                  landmark_list[8])
-                send_data(sock, UDP_IP, UDP_PORT, sending_data)
+                send_data(sock, UDP_IP, UDP_PORT, sending_data, debug=False)
                 
                 ##### Draw text information on the screen
                 debug_image = draw_info_text(
