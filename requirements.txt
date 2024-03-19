@@ -4,4 +4,11 @@ opencv-python >= 4.6.0.66
 scikit-learn >= 1.0.2
 matplotlib >= 3.5.1
 protobuf >=3.9.2
-tf-nightly>=2.5.0.dev
+
+# This is pretty much the newer pre-releases of tensorflow, if you want stable versions, comment tf-nightly
+# and uncomment tensorflow.
+# Stable tensorflow now supports LSTM so unless you want newer features, there's not really any reason to install this.
+tf-nightly>=2.5.0.dev   
+
+# This is to compile your .py into an app
+pyinstaller
