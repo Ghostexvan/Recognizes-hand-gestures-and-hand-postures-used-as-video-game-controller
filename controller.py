@@ -43,7 +43,7 @@ dir_path = os.path.dirname(full_path)
 # SPECIFY SOCKET ATTRIBUTES -----------------------------------------------------------------------------------
 
 UDP_IP = "127.0.0.1"
-UDP_PORT = 27001
+UDP_PORT = 27002
 
 # CREATE SOCKET CONNECTION ------------------------------------------------------------------------------------
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
