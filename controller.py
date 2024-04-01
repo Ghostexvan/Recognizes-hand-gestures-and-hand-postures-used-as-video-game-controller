@@ -62,10 +62,10 @@ def get_args():
     parser.add_argument("--device", type=int, default=0)
     
     ### Width of the captured video
-    parser.add_argument("--width", help='cap width', type=int, default=1600)
+    parser.add_argument("--width", help='cap width', type=int, default=854)
     
     ### Height of the captured video
-    parser.add_argument("--height", help='cap height', type=int, default=900)
+    parser.add_argument("--height", help='cap height', type=int, default=480)
     ### >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     ## Arguments for hand recognition from MediaPipe:
@@ -105,6 +105,11 @@ def get_args():
                         default=0.5)
     ### >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     
+    parser.add_argument("--border_percent",
+                        help='border_percent',
+                        type=float,
+                        default=0.35)
+    
     ## Convert argument strings to objects and assign them as attributes of the namespace
     args = parser.parse_args()
 
@@ -124,6 +129,7 @@ def main():
     cap_device = args.device
     cap_width = args.width
     cap_height = args.height
+    border_percent = args.border_percent
 
     ### For MediaPipe
     use_static_image_mode = args.use_static_image_mode
@@ -293,14 +299,25 @@ def main():
                     finger_gesture_history).most_common()
 
                 ##### Draw a border around the recognized hand
-                debug_image = draw_bounding_rect(use_brect, debug_image, brect)
+                debug_image = draw_bounding_rect(use_brect, debug_image, brect, border_percent)
                 
                 ##### Draw hand landmarks on the recognized hand
                 debug_image = draw_landmarks(debug_image, landmark_list)
                 
+                centroid_point = get_centroid([landmark_list[0],
+                                               landmark_list[1],
+                                               landmark_list[5],
+                                               landmark_list[9],
+                                               landmark_list[13],
+                                               landmark_list[17]])
                 sending_data = get_sending_info(debug_image, 
                                  controller_labels[most_common_fg_id[0][0]][hand_sign_id],
-                                 landmark_list[8])
+                                #  landmark_list[8])
+                                 centroid_point,
+                                 border_percent)
+                
+                if centroid_point != None:
+                    debug_image = draw_centroid(debug_image, centroid_point)
                 send_data(sock, UDP_IP, UDP_PORT, sending_data, debug=False)
                 
                 ##### Draw text information on the screen
@@ -630,7 +647,7 @@ def draw_landmarks(image, landmark_point):
     return image
 
 # DRAW A BORDER AROUND THE DETECTED HAND ----------------------------------------------------------------------
-def draw_bounding_rect(use_brect, image, brect):
+def draw_bounding_rect(use_brect, image, brect, border_percent):
     ## This function draws a border around the detected hand
     ## --------------------------------------------------------------------------------------------------------
     
@@ -638,6 +655,11 @@ def draw_bounding_rect(use_brect, image, brect):
         ### Circumscribed rectangle
         cv.rectangle(image, (brect[0], brect[1]), (brect[2], brect[3]),
                      (0, 0, 0), 1)
+        cv.rectangle(image, (int(image.shape[1] * border_percent),
+                             int(image.shape[0] * border_percent)),
+                            (int(image.shape[1] - image.shape[1] * border_percent),
+                             int(image.shape[0] - image.shape[0] * border_percent)),
+                    (0, 0, 255), 5)
 
     return image
 
@@ -684,6 +706,15 @@ def draw_point_history(image, point_history):
 
     return image
 
+def draw_centroid(image, centroid_point):
+    ## This function draws the history of hand landmarks on the display screen
+    ## --------------------------------------------------------------------------------------------------------
+    
+    cv.circle(image, (int(centroid_point[0]), int(centroid_point[1])), 1,
+            (152, 251, 152), 2)
+
+    return image
+
 # DRAW INFORMATION ON THE DISPLAY SCREEN ----------------------------------------------------------------------
 def draw_info(image, fps):
     ## This function draws information on the display screen
@@ -696,17 +727,35 @@ def draw_info(image, fps):
 
     return image
 
-def get_sending_info(image, controller_command_text, index_finger_coordinate):
+def get_sending_info(image, controller_command_text, pointer_coordinate, percent_border):
     image_width, image_height = image.shape[1], image.shape[0]
+    
+    percent_width = (
+        (pointer_coordinate[0] - (percent_border * image_width)) /
+        (image_width - (2 * image_width * percent_border))
+    )
+    
+    percent_height = (
+        (pointer_coordinate[1] - (percent_border*image_height)) /
+        (image_height - (2 * image_height * percent_border))
+    )
+    
     sending_data = (controller_command_text + '-' 
-                    + str(index_finger_coordinate[0]/image_width) + '-' 
-                    + str(index_finger_coordinate[1]/image_height))
+                    + str(percent_width) + '-' 
+                    + str(percent_height))
+    print(sending_data)
     return sending_data
     
 def send_data(sock, IP, PORT, data, debug=True):
     sock.sendto(data.encode("UTF-8"), (IP, PORT))
     if debug:
         print("Sending data: ", data)
+        
+def get_centroid(landmark_list):   
+    x = [p[0] for p in landmark_list]
+    y = [p[1] for p in landmark_list]
+    
+    return (sum(x) / len(landmark_list), sum(y) / len(landmark_list))
 
 # THE MAIN PROGRAM RUNS HERE ----------------------------------------------------------------------------------
 if __name__ == '__main__':

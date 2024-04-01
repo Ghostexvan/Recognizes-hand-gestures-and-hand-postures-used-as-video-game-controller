@@ -302,7 +302,15 @@ def main():
                 point_history.append(landmark_list[8])
                 
                 ##### Save landmark history data
-                landmark_history.append(landmark_list)
+                # landmark_history.append(landmark_list)
+                landmark_history.append([
+                                            landmark_list[0], 
+                                            landmark_list[4], 
+                                            landmark_list[8], 
+                                            landmark_list[12],
+                                            landmark_list[16],
+                                            landmark_list[20]
+                                        ])
                 
                 ##### Save thumb and index finger history data
                 thumb_and_index_finger_history.append([landmark_list[4], landmark_list[8]])
@@ -331,7 +339,7 @@ def main():
                     finger_gesture_id = point_history_classifier(
                         pre_processed_point_history_list)
                     
-                if landmark_history_len == history_length*42:
+                if landmark_history_len == history_length*12:
                     ###### Classification of index finger gestures
                     hand_gesture_id = hand_gesture_classifier(
                         pre_processed_hand_landmark_history_list)
@@ -387,10 +395,12 @@ def main():
             
             #### Save empty thumb and index finger data to history
             thumb_and_index_finger_history.append([[0, 0], [0, 0]])
+            landmark_history.append([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
 
         ### Draw the history of hand landmarks
         if hand_sign_id==2 or mode>=3:
-            debug_image = draw_point_history(debug_image, point_history)
+            # debug_image = draw_point_history(debug_image, point_history)
+            debug_image = draw_landmark_history(debug_image, landmark_history)
         
         ### Draw information on the screen
         debug_image = draw_info(debug_image, fps, mode, number)
@@ -552,7 +562,7 @@ def pre_process_hand_landmark_history(image, hand_landmark_history):
 
     temp_hand_landmark_history = copy.deepcopy(hand_landmark_history)
     
-    base = [[None for _ in range(2)] for _ in range(21)]
+    base = [[None for _ in range(2)] for _ in range(6)]
 
     ## Convert to relative coordinates
     for index, point in enumerate(temp_hand_landmark_history):
@@ -909,6 +919,41 @@ def draw_point_history(image, point_history):
             cv.circle(image, (point[0], point[1]), 1 + int(index / 2),
                       (152, 251, 152), 2)
 
+    return image
+
+# DRAW THE HISTORY OF HAND LANDMARKS ON THE DISPLAY SCREEN ----------------------------------------------------
+def draw_landmark_history(image, landmark_history):
+    ## This function draws the history of hand landmarks on the display screen
+    ## --------------------------------------------------------------------------------------------------------
+    
+    for index, point in enumerate(landmark_history):
+        for _index, _point in enumerate(point):
+            if _point[0] != 0 and _point[1] != 0:
+                match _index:
+                    case 0:
+                        cv.circle(image, (_point[0], _point[1]), 1 + int(index / 2),
+                                (34, 139, 34), 2)
+                        # break
+                    case 1:
+                        cv.circle(image, (_point[0], _point[1]), 1 + int(index / 2),
+                                (255, 0, 0), 2)
+                        # break
+                    case 2:
+                        cv.circle(image, (_point[0], _point[1]), 1 + int(index / 2),
+                                (0, 0, 255), 2)
+                        # break
+                    case 3:
+                        cv.circle(image, (_point[0], _point[1]), 1 + int(index / 2),
+                                (0, 255, 0), 2)
+                        # break
+                    case 4:
+                        cv.circle(image, (_point[0], _point[1]), 1 + int(index / 2),
+                                (224, 255, 255), 2)
+                        # break
+                    case 5:
+                        cv.circle(image, (_point[0], _point[1]), 1 + int(index / 2),
+                                (255, 255, 0), 2)
+                        # break
     return image
 
 # DRAW INFORMATION ON THE DISPLAY SCREEN ----------------------------------------------------------------------
