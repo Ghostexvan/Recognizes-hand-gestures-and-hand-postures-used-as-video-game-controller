@@ -351,6 +351,7 @@ def main():
 
                 ##### Save the index finger gesture ID that appear
                 finger_gesture_history.append(finger_gesture_id)
+                print(finger_gesture_history)
                 
                 ##### Save the hand gesture ID that appear
                 hand_gesture_history.append(hand_gesture_id)
