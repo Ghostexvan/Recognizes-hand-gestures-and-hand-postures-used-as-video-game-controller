@@ -10,7 +10,7 @@ print("Initiate Hand Posture Classification, file at:" + os.path.dirname(full_pa
 class KeyPointClassifier(object):
     def __init__(
         self,   
-        model_path=os.path.join(os.path.dirname(full_path),"keypoint_classifier.tflite"),
+        model_path=os.path.join(os.path.dirname(full_path),"keypoint_classifier1.tflite"),
         num_threads=1,
     ):
         self.interpreter = tf.lite.Interpreter(model_path=model_path,

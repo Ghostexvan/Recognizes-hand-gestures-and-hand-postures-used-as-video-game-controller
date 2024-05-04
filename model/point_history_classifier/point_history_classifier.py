@@ -11,7 +11,7 @@ print("Initiate Index Finger Gesture Classification, file at:" + os.path.dirname
 class PointHistoryClassifier(object):
     def __init__(
         self,
-        model_path=os.path.join(dir_path,"point_history_classifier_with_threshold.tflite"),
+        model_path=os.path.join(dir_path,"point_history_classifier_with_threshold1.tflite"),
         score_th=0.5,
         invalid_value=0,
         num_threads=1,

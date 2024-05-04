@@ -913,12 +913,12 @@ def draw_info_text(image, brect, handedness, hand_sign_text,
                    cv.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2,
                    cv.LINE_AA)
     
-    if thumb_and_index_finger_gesture_text != "":
-        cv.putText(image, "Thumb and Index Finger Gesture:" + thumb_and_index_finger_gesture_text, (10, 150),
-                   cv.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 4, cv.LINE_AA)
-        cv.putText(image, "Thumb and Index Finger Gesture:" + thumb_and_index_finger_gesture_text, (10, 150),
-                   cv.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2,
-                   cv.LINE_AA)
+    # if thumb_and_index_finger_gesture_text != "":
+    #     cv.putText(image, "Thumb and Index Finger Gesture:" + thumb_and_index_finger_gesture_text, (10, 150),
+    #                cv.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 4, cv.LINE_AA)
+    #     cv.putText(image, "Thumb and Index Finger Gesture:" + thumb_and_index_finger_gesture_text, (10, 150),
+    #                cv.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2,
+    #                cv.LINE_AA)
         
     return image
 
@@ -943,30 +943,30 @@ def draw_landmark_history(image, landmark_history):
         for _index, _point in enumerate(point):
             if _point[0] != 0 and _point[1] != 0:
                 match _index:
-                    case 0:
-                        cv.circle(image, (_point[0], _point[1]), 1 + int(index / 2),
-                                (34, 139, 34), 2)
+                    # case 0:
+                    #     cv.circle(image, (_point[0], _point[1]), 1 + int(index / 2),
+                    #             (34, 139, 34), 2)
                         # break
-                    case 1:
-                        cv.circle(image, (_point[0], _point[1]), 1 + int(index / 2),
-                                (255, 0, 0), 2)
-                        # break
+                    # case 1:
+                    #     cv.circle(image, (_point[0], _point[1]), 1 + int(index / 2),
+                    #             (255, 0, 0), 2)
+                    #     # break
                     case 2:
                         cv.circle(image, (_point[0], _point[1]), 1 + int(index / 2),
                                 (0, 0, 255), 2)
                         # break
-                    case 3:
-                        cv.circle(image, (_point[0], _point[1]), 1 + int(index / 2),
-                                (0, 255, 0), 2)
-                        # break
-                    case 4:
-                        cv.circle(image, (_point[0], _point[1]), 1 + int(index / 2),
-                                (224, 255, 255), 2)
-                        # break
-                    case 5:
-                        cv.circle(image, (_point[0], _point[1]), 1 + int(index / 2),
-                                (255, 255, 0), 2)
-                        # break
+                    # case 3:
+                    #     cv.circle(image, (_point[0], _point[1]), 1 + int(index / 2),
+                    #             (0, 255, 0), 2)
+                    #     # break
+                    # case 4:
+                    #     cv.circle(image, (_point[0], _point[1]), 1 + int(index / 2),
+                    #             (224, 255, 255), 2)
+                    #     # break
+                    # case 5:
+                    #     cv.circle(image, (_point[0], _point[1]), 1 + int(index / 2),
+                    #             (255, 255, 0), 2)
+                    #     # break
     return image
 
 # DRAW INFORMATION ON THE DISPLAY SCREEN ----------------------------------------------------------------------
